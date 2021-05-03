@@ -57,7 +57,7 @@ function changeInterface(){
     dayRange.className += " hidden";
     dateEnd.className += " hidden";
   }else if(chartContainer.className.includes(" hidden")) {
-    chartContainer.className = sunContainer.className.replace(" hidden","");
+    chartContainer.className = chartContainer.className.replace(" hidden","");
     sunContainer.className+=" hidden";
     dayRange.className= dayRange.className.replace("hidden","");
     dateEnd.className= dateEnd.className.replace("hidden","");
@@ -78,7 +78,7 @@ function changeStateSwitch(){
     chartIcn.className = chartIcn.className.replace(" green","");
   } else if(sunBtn.className.includes(" active")){
     sunBtn.className = sunBtn.className.replace(" active","")
-    sunIcn.className = chartIcn.className.replace(" yellow","");
+    sunIcn.className = sunIcn.className.replace(" yellow","");
     chartBtn.className += " active";
     chartIcn.className += " green";
   }
@@ -158,22 +158,22 @@ function getSunUp(times, date){
 //Funktsioon, mis kaardile vajutades uuendab koordinaate ja kutsub välja
 //markeri liigutamise ja infotahvli värskendamise.
 function onMapClick(e) {
-  var mapX = e.latlng["lat"];
-  var mapY = e.latlng["lng"];
+  var mapY = e.latlng["lat"];
+  var mapX = e.latlng["lng"];
   while(mapX < -180){
     mapX+=360;
   }
-  while(mapY < -180){
-    mapY+=360;
+  while(mapY < -90){
+    mapY+=180;
   }
   while(mapX > 180){
     mapX-=360;
   }
-  while(mapY > 180){
-    mapY-=360;
+  while(mapY > 90){
+    mapY-=180;
   }
-  document.getElementById("lat").value = mapX.toFixed(6);
-  document.getElementById("long").value = mapY.toFixed(6);
+  document.getElementById("lat").value = mapY.toFixed(6);
+  document.getElementById("long").value = mapX.toFixed(6);
   moveMarker();
   update();
 }
@@ -204,19 +204,48 @@ function getDates(startDate, stopDate) {
   return dateArray;
 }
 
-//Meetod leidmaks päevade pikkusi poollõigus[Date startDate, Date stopDate)
-function getDayLengths(startDate, stopDate) {
-  var dayLenghts = new Array();
+//Meetod leidmaks, päikeselist ja pimedata aega päevade poollõigus[startDate, stopDate]
+function getDayData(startDate, stopDate) {
+  var sunRises = new Array();
+  var sunSets = new Array();
+  var sunUps = new Array();
+  var sunUps2 = new Array();
   var currentDate = startDate;
   var lat = document.getElementById("lat").value
   var lng = document.getElementById("long").value
+
+  var sunSet=0;
+  var sunRise=0;
   while (currentDate < stopDate) {
     var times = SunCalc.getTimes(currentDate, lat, lng);
-    dayLenghts.push(getSunUp(times, currentDate));
+    var sunUp = getSunUp(times, currentDate);
+    var sunUp2=0;
+    if (sunUp == 0){
+      sunRise = 1440;//enne päikesetõusu on terve 1440 minutit ehk terve päev.
+      sunSet=0;
+    } else if (sunUp == 1440) {
+      sunRise = 0;
+      sunSet = 0;
+    }else {
+      sunRise = times.sunrise.getHours() * 60 + times.sunrise.getMinutes();
+      sunSet = times.sunset.getHours() * 60 + times.sunset.getMinutes();
+      if(sunRise>sunSet){//Kui loojang on enne tõusu.
+        sunUp2=sunSet;
+        sunRise=1440-sunUp; //Ülejäänud osa päevast
+        sunSet=0//Märguanne, et üüpäeva graafik algas päevaga.
+      }else{
+        sunSet=1440-sunRise-sunUp;//Kui algab ööga, siis vaab nii teha.
+      }
+    }
+    sunSets.push(sunSet/60);
+    sunRises.push(sunRise/60);
+    sunUps.push(sunUp/60);
+    sunUps2.push(sunUp2/60);
     currentDate = currentDate.addDays(1);
   }
-  return dayLenghts;
+  return [sunRises, sunUps, sunSets, sunUps2];
 }
+
 
 //Meetod leidmaks vajalik info graafiku jaoks. Kuupäevad x teljele ning öö ning
 //päikselise ja päikseta perioodi pikkused y teljele.
@@ -224,11 +253,13 @@ function getData(){
   var returnable=[];
   var startDay = new Date(document.getElementById("date").value);
   var endDay = new Date(moment(document.getElementById("dateEnd").textContent, dateFormat)).addDays(1);
-  var dl = getDayLengths(startDay, endDay);
+  var dd = getDayData(startDay, endDay);
 
   returnable[0]=getDates(startDay, endDay);
-  returnable[1]=dl.map(function(length){return length/60});
-  returnable[2]=dl.map(function(length){return 24-length/60});
+  returnable[1]=dd[0];
+  returnable[2]=dd[1];
+  returnable[3]=dd[2];
+  returnable[4]=dd[3];
   return returnable;
 }
 
@@ -237,47 +268,99 @@ function plotChart(){
   var data = getData();
   var ctx = document.getElementById("myChart");
   if (chart!=null)chart.destroy();
+  console.log(data);
   chart = new Chart(ctx, {
-    type: 'line',
-
+    type: 'bar',
     data: {
-      showLine:false,
+
       labels:data[0],
-      datasets:[{
-        label: "day",
-        fill:true,
-        backgroundColor: [
-          'rgba(255, 206, 64, 0.5)',
-        ],
-        data:data[1],
-        stack:"dayTotal",
-      },
-      {
-          label:"night",
-          fill:true,
+      datasets:[
+        {
+          label:"Daylight_0",
+          barPercentage: 1.0,
+          categoryPercentage: 1.0,
           backgroundColor: [
-            'rgba(150, 150, 150, 0.4)',
+            'rgba(255, 206, 94, 0.3)',
+          ],
+          data:data[4],
+          stack:"dayTotal",
+        },
+        {
+          label:"Dawn",
+          backgroundColor: [
+            'rgba(150, 150, 150, 0.3)',
+          ],
+          data:data[1],
+          stack:"dayTotal",
+          categoryPercentage: 1.0,
+          barPercentage: 1.0,
+        },
+        {
+          label:"Daylight",
+          barPercentage: 1.0,
+          categoryPercentage: 1.0,
+          backgroundColor: [
+            'rgba(255, 206, 94, 0.3)',
           ],
           data:data[2],
           stack:"dayTotal",
-          showLine:false,
         },
-        ]
+        {
+          label:"Dusk",
+          categoryPercentage: 1.0,
+          barPercentage: 1.0,
+          backgroundColor: [
+            'rgba(150, 150, 150, 0.3)',
+          ],
+          data:data[3],
+          stack:"dayTotal",
+
+      },
+      ]
     },
     options: {
-        scales: {
-            y: {
-              stacked:true,
-              max:24,
-              min:0,
+      plugins:{
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          enabled:true,
+          callbacks: {
+               label: function(tooltipItem, index) {
 
-            },
-            x: {
-              ticks:{
-                maxTicksLimit: 12,
-              }
+                    if(tooltipItem.dataset.label=="Daylight"){
+                      var daytime = data[2][tooltipItem.dataIndex]+
+                      +data[4][tooltipItem.dataIndex];
+                      var h =  ~~(daytime);
+                      var mins = Math.round((parseFloat(daytime)-h)*60);
+                      return "Daylight: "+h+"h " +mins+ "min";
+                    }else if(tooltipItem.dataset.label=="Dusk"){
+                      var nighttime = data[1][tooltipItem.dataIndex]+
+                      +data[3][tooltipItem.dataIndex];
+                      var h =  ~~(nighttime);
+                      var mins = Math.round((parseFloat(nighttime)-h)*60);
+                        return "Nighttime: "+h+"h " +mins+ "min";
+                    }
+                    return;
+                    if (h==24 || h==0 && mins==0)return tooltipItem.dataset.label+" -"
+                    return tooltipItem.dataset.label+" "+("0"+h).slice(-2)+
+                    ":"+("0"+mins).slice(-2);
+               }
             }
+        },
+      },
+      scales: {
+        y: {
+          stacked:true,
+          max:24,
+          min:0,
+        },
+        x: {
+          ticks:{
+            maxTicksLimit: 12,
+          }
         }
+      }
     }
   });
 }
