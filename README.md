@@ -9,6 +9,7 @@ Väga palju(u 8h) kulus veebilehe kaunimaks tegemisele. Olin varasemalt Semantic
 Kui lõpuks disainiga rahule jäin, siis refaktoreerisin oma koodi ja lisasin kommentaare. ca 1.5h. Seejuures mõtlesin välja, et tahan ikka graafikus ka päikese tõusu ja loojangu aeg oleks visuaalselt kajastatud. 3.5h kulus selleks, et graafikul oleks näha kuidas läbi aja muutub päiksetõusu ja -loojangu ajad vahemiku lõikes. Palju pahandust oli polaarpiirkondadega. Kuna seal võis UTC ajamääratluse järgi päikeseloojang olla enne päikesetõusu, siis mu graafik läks veel päris lõpus teatud sisenditel katki. Lahenduseks lisasin graafikusse uue dataseti, mis võimaldas ka ööpäevas kahte eraldiseisvat päikeselist perioodi. See arvatavasti ei ole kõige elegantsem lahendus, kuid ajas asja ära.
 
 Umbes tund kulus kõige kõrvalt dokumenteerimisele.
+Oli väga põnev ja hariv praktikatöö. Aitäh :D
 
 Rakenduses on kasutatud alljärgenaid viitamist nõudvaid tarkvarasid:
 SunCalc https://github.com/mourner/suncalc
