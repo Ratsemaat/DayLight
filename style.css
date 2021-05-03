@@ -1,0 +1,141 @@
+.icons {
+    background-size: 50px 50px;
+}
+
+.timeFont {
+    font-size:2.0rem;
+    text-align: center;
+}
+
+#mapid {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+
+}
+
+#mapContainer {
+    position: relative;
+    padding-top: 56.25%;
+    min-height: 200px;
+    min-width: 200px;
+}
+
+#chartContainer {
+  position: relative;
+  padding-top: 50%;
+  min-height: 200px;
+  min-width: 200px;
+}
+
+#myChart{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+}
+
+
+.lower.three.wide.column{
+  margin-top:75px;
+  line-height: 0rem;
+}
+
+body {
+  background-color: #c8d5b9;
+
+  color:#696d7d
+}
+
+.centered.ten.wide.column{
+  background-color: #faf3dd;
+  padding: 20px;
+}
+
+.dark.icon{
+  color: #696d7d;
+}
+
+.no_bottom_pad.one.column.row{
+  padding-bottom:  0px;
+  align-items: : center;
+}
+
+.hidden{
+  display: none;
+}
+.ui.container.hidden{
+  display: none;
+}
+.three.column.row.hidden{
+  display: none;
+}
+
+.no_top_pad.one.column.row{
+  padding-top: 0px;
+}
+
+.ui.dark.button{
+  color: #696d7d;
+}
+
+.sunyellow.icon{
+  color: #FFCE54
+}
+
+.sunyellow.label{
+  background-color: #FFCE54
+}
+
+.ui.labeled.input{
+  color:#696d7d
+}
+
+.ui.labeled.input{
+  color:#696d7d !important;
+}
+
+#dateEnd{
+  position: relative;
+  top:6px
+}
+
+/*https://www.w3schools.com/howto/howto_js_rangeslider.asp--!*/
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%; /* Full-width */
+  height: 10px; /* Specified height */
+  position: relative;
+  top:9px;
+  background: #white; /* Grey background */
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: round;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  border-radius: 20px;
+  background: #FFCE54; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+  width: 20px; /* Set a specific slider handle width */
+  height: 20px; /* Slider handle height */
+  border-radius: 20px;
+  background: #FFCE54; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
